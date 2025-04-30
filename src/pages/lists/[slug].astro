@@ -1,0 +1,52 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Button from '../../components/Button.astro';
+import UrlItem from '../../components/UrlItem.astro';
+import { getUrlList } from '../../db/url-list-repository';
+
+const { slug } = Astro.params;
+const list = await getUrlList(slug);
+
+if (!list) {
+  return Astro.redirect('/404');
+}
+
+const shareUrl = `${Astro.url.origin}/${list.customSlug || list.generatedSlug}`;
+---
+
+<Layout title={list.title}>
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+          {list.title}
+        </h1>
+        <div class="flex items-center space-x-4 text-sm text-gray-500">
+          <span>{list.items?.length || 0} URLs</span>
+          <span>•</span>
+          <span>Created {new Date(list.createdAt).toLocaleDateString()}</span>
+        </div>
+      </div>
+
+      <div class="flex space-x-4">
+        <Button
+          variant="secondary"
+          onclick={`navigator.clipboard.writeText('${shareUrl}')`}
+        >
+          Copy Link
+        </Button>
+        {list.userId === '123' && (
+          <Button href={`/lists/${list.id}/edit`}>
+            Edit List
+          </Button>
+        )}
+      </div>
+    </div>
+
+    <div class="space-y-4">
+      {list.items?.map((item) => (
+        <UrlItem item={item} />
+      ))}
+    </div>
+  </div>
+</Layout>

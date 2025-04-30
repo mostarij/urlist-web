@@ -4,14 +4,13 @@ interface Props {
   size?: 'sm' | 'md' | 'lg';
   href?: string;
   type?: 'button' | 'submit';
+  name?: string;
+  value?: string;
+  onclick?: string;
+  class?: string;
 }
 
-const {
-  variant = 'primary',
-  size = 'md',
-  href,
-  type = 'button',
-} = Astro.props;
+const props = Astro.props;
 
 const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl';
 
@@ -26,17 +25,21 @@ const sizeStyles = {
   lg: 'px-8 py-4 text-lg',
 };
 
-const classes = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]}`;
+const classes = `${baseStyles} ${variantStyles[props.variant || 'primary']} ${sizeStyles[props.size || 'md']} ${props.class || ''}`;
 ---
 
-{
-  href ? (
-    <a href={href} class={classes}>
-      <slot />
-    </a>
-  ) : (
-    <button type={type} class={classes}>
-      <slot />
-    </button>
-  )
-}
+{props.href ? (
+  <a href={props.href} class={classes}>
+    <slot />
+  </a>
+) : (
+  <button
+    type={props.type || 'button'}
+    class={classes}
+    name={props.name}
+    value={props.value}
+    onclick={props.onclick}
+  >
+    <slot />
+  </button>
+)}

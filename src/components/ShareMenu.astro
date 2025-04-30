@@ -1,0 +1,52 @@
+---
+import { shareOptions } from '../utils/share';
+
+interface Props {
+  url: string;
+  title: string;
+}
+
+const { url, title } = Astro.props;
+---
+
+<div class="relative" x-data="{ open: false }">
+  <button
+    @click="open = !open"
+    class="inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+      <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+    </svg>
+    <span>Share</span>
+  </button>
+
+  <div
+    x-show="open"
+    @click.away="open = false"
+    class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1"
+  >
+    {shareOptions.map((option) => (
+      <button
+        onclick={option.name === 'Copy Link' 
+          ? `navigator.clipboard.writeText('${url}')`
+          : `window.open('${option.url(url, title)}', '_blank')`
+        }
+        class="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+      >
+        <span class="mr-3" set:html={option.icon} />
+        {option.name}
+      </button>
+    ))}
+  </div>
+</div>
+
+<script>
+  // Show success message when link is copied
+  document.addEventListener('copy', () => {
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg';
+    toast.textContent = 'Link copied to clipboard!';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+  });
+</script>

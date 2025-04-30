@@ -1,5 +1,25 @@
+import { z } from 'zod';
+
+// Environment variable validation schema
+const envSchema = z.object({
+  DATABASE_URL: z.string().url(),
+  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  APP_URL: z.string().url(),
+  SESSION_SECRET: z.string().min(32),
+});
+
+// Validate environment variables
+const env = envSchema.parse({
+  DATABASE_URL: process.env.DATABASE_URL,
+  NODE_ENV: process.env.NODE_ENV,
+  APP_URL: process.env.APP_URL,
+  SESSION_SECRET: process.env.SESSION_SECRET,
+});
+
+export const ENV = env;
 export const APP_NAME = 'UrList';
 export const APP_DESCRIPTION = 'Your universal list manager for organizing everything in one place';
+export const IS_PROD = env.NODE_ENV === 'production';
 
 export const ROUTES = {
   HOME: '/',
