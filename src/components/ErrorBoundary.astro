@@ -1,0 +1,24 @@
+---
+interface Props {
+  error?: Error;
+}
+
+const { error } = Astro.props;
+---
+
+<div class="min-h-[400px] flex items-center justify-center">
+  <div class="text-center">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">
+      {error?.message || 'Something went wrong'}
+    </h2>
+    <p class="text-gray-600 mb-8">
+      {error?.cause || 'Please try again later or contact support if the problem persists.'}
+    </p>
+    <a
+      href="/"
+      class="text-blue-600 hover:text-blue-700 font-medium"
+    >
+      Return to Home
+    </a>
+  </div>
+</div>

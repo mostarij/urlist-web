@@ -1,0 +1,30 @@
+---
+import Button from './Button.astro';
+
+interface Props {
+  title: string;
+  subtitle: string;
+}
+
+const { 
+  title = "Welcome to UrList",
+  subtitle = "Your universal list manager for organizing everything in one place"
+} = Astro.props;
+---
+
+<div class="max-w-2xl mx-auto text-center">
+  <h1 class="text-5xl font-extrabold text-gray-900 mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+    {title}
+  </h1>
+  <p class="text-xl text-gray-600 mb-8">
+    {subtitle}
+  </p>
+  <div class="flex gap-4 justify-center">
+    <Button href="/get-started">
+      Get Started
+    </Button>
+    <Button variant="secondary" href="/about">
+      Learn More
+    </Button>
+  </div>
+</div>

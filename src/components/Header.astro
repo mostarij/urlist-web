@@ -1,0 +1,36 @@
+---
+import { APP_NAME, ROUTES } from '../utils/constants';
+import Button from './Button.astro';
+
+const navItems = [
+  { label: 'Features', href: ROUTES.ABOUT },
+  { label: 'Lists', href: ROUTES.LISTS },
+];
+---
+
+<header class="bg-white shadow-sm">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex items-center">
+        <a href={ROUTES.HOME} class="text-xl font-bold text-blue-600">
+          {APP_NAME}
+        </a>
+        <nav class="hidden md:ml-8 md:flex space-x-4">
+          {navItems.map((item) => (
+            <a
+              href={item.href}
+              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+      </div>
+      <div class="flex items-center space-x-4">
+        <Button href={ROUTES.NEW_LIST} size="sm">
+          New List
+        </Button>
+      </div>
+    </div>
+  </div>
+</header>
