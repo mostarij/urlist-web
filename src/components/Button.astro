@@ -43,8 +43,8 @@ const classes = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${p
   <a 
     href={href} 
     class={classes} 
-    {...props}
     data-astro-reload={client ? undefined : true}
+    {...props}
   >
     <slot />
   </a>
@@ -53,9 +53,26 @@ const classes = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${p
     type={type} 
     class={classes} 
     disabled={disabled}
-    data-astro-reload={client ? undefined : true}
+    onclick={client ? props.onclick : undefined}
     {...props}
   >
     <slot />
   </button>
 )}
+
+<script>
+  document.querySelectorAll('button[onclick]').forEach(button => {
+    button.addEventListener('click', (e) => {
+      if (button.hasAttribute('disabled')) {
+        e.preventDefault();
+        return;
+      }
+      
+      // Handle client-side navigation with type safety
+      const href = button.getAttribute('data-href');
+      if (typeof href === 'string' && href.length > 0) {
+        window.location.href = href;
+      }
+    });
+  });
+</script>

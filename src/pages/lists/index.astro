@@ -4,10 +4,11 @@ import Button from '../../components/Button.astro';
 import UrlListCard from '../../components/UrlListCard.astro';
 import { getOrCreateDemoUser } from '../../db/user-repository';
 import { getUserUrlLists, deleteUrlList } from '../../db/url-list-repository';
+import type { UrlList } from '../../types/url-list';
 
 export const prerender = false;
 
-let lists = [];
+let lists: UrlList[] = [];
 let error: string | undefined;
 let success: string | undefined;
 

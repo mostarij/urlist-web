@@ -200,8 +200,10 @@ const shareUrl = list ? `${Astro.url.origin}/${list.customSlug || list.generated
   // Refresh page after successful form submission
   document.querySelectorAll('form').forEach(form => {
     form.addEventListener('submit', async (e) => {
-      const submitButton = form.querySelector('button[type="submit"]');
-      if (submitButton) submitButton.disabled = true;
+      const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+      if (submitButton) {
+        submitButton.disabled = true;
+      }
     });
   });
 </script>

@@ -12,6 +12,10 @@ let error;
 let notFound = false;
 
 try {
+  if (!slug) {
+    return Astro.redirect('/404');
+  }
+  
   list = await getUrlList(slug);
   
   if (!list) {
@@ -23,26 +27,29 @@ try {
   console.error('Error loading list:', e);
 }
 
-if (notFound) {
+// Add type assertion for list after validation
+if (!list || notFound) {
   return Astro.redirect('/404');
 }
 
-const items = Array.isArray(list?.items) ? list.items : [];
+const items = Array.isArray(list.items) ? list.items : [];
+const safeList = list; // Type assertion after validation
 ---
 
-<Layout title={list ? list.title : 'View List'}>
+<Layout title={safeList.title}>
   <div class="max-w-4xl mx-auto px-4 py-8">
     {error && (
       <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
         {error}
       </div>
     )}
+    
     <div>
       <div class="flex justify-between items-start mb-8">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900 mb-2">{list.title}</h1>
+          <h1 class="text-3xl font-bold text-gray-900 mb-2">{safeList.title}</h1>
           <div class="text-sm text-gray-500">
-            {items.length} URLs • Last updated {new Date(list.updatedAt).toLocaleDateString()}
+            {items.length} URLs • Last updated {new Date(safeList.updatedAt).toLocaleDateString()}
           </div>
         </div>
         <Button
@@ -64,13 +71,15 @@ const items = Array.isArray(list?.items) ? list.items : [];
 </Layout>
 
 <script>
-  // Add copy feedback
-  document.querySelector('button')?.addEventListener('click', () => {
-    const button = document.querySelector('button');
-    const originalText = button.textContent;
-    button.textContent = 'Copied!';
-    setTimeout(() => {
-      button.textContent = originalText;
-    }, 2000);
-  });
+  // Add copy feedback with proper null checks
+  const copyButton = document.querySelector('button[type="button"]');
+  if (copyButton) {
+    copyButton.addEventListener('click', () => {
+      const originalText = copyButton.textContent || 'Copy Link';
+      copyButton.textContent = 'Copied!';
+      setTimeout(() => {
+        copyButton.textContent = originalText;
+      }, 2000);
+    });
+  }
 </script>

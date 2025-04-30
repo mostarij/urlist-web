@@ -1,6 +1,7 @@
 import { Pool } from 'pg';
+import type { QueryResult as PgQueryResult, QueryResultRow } from 'pg';
 import { ENV } from './constants';
-import fs from 'fs/promises';
+import * as fs from 'fs/promises';
 import path from 'path';
 
 // Create a new Pool instance with validated connection string
@@ -42,16 +43,19 @@ export type QueryResult<T> = {
   rowCount: number;
 };
 
-export async function query<T = any>(
+export async function query<T extends QueryResultRow = any>(
   text: string,
   params?: any[]
 ): Promise<QueryResult<T>> {
   const start = Date.now();
   try {
-    const res = await pool.query(text, params);
+    const res: PgQueryResult<T> = await pool.query(text, params);
     const duration = Date.now() - start;
     console.log('Executed query', { text, duration, rows: res.rowCount });
-    return res;
+    return {
+      rows: res.rows,
+      rowCount: res.rowCount || 0,
+    };
   } catch (error) {
     console.error('Database query error:', error);
     throw error;
