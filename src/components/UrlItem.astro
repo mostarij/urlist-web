@@ -62,7 +62,8 @@ const { item, isEditing = false } = Astro.props;
 <script>
   document.querySelectorAll('.cancel-edit-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      btn.closest('[data-edit-url-form]')?.reset();
+      const form = btn.closest('[data-edit-url-form]') as HTMLFormElement;
+      form?.reset();
     });
   });
 </script>
