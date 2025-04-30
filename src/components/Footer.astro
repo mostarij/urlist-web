@@ -1,5 +1,5 @@
 ---
-import { APP_NAME } from '../utils/constants';
+import { APP_NAME, ROUTES } from '../utils/constants';
 
 const currentYear = new Date().getFullYear();
 ---
@@ -12,19 +12,19 @@ const currentYear = new Date().getFullYear();
       </div>
       <div class="flex space-x-6 mt-4 md:mt-0">
         <a
-          href="/privacy"
+          href={ROUTES.PRIVACY}
           class="text-gray-600 hover:text-gray-900 text-sm"
         >
           Privacy Policy
         </a>
         <a
-          href="/terms"
+          href={ROUTES.TERMS}
           class="text-gray-600 hover:text-gray-900 text-sm"
         >
           Terms of Service
         </a>
         <a
-          href="https://github.com/yourusername/urlist"
+          href="https://github.com/mostarij/urlist-web"
           class="text-gray-600 hover:text-gray-900 text-sm"
           target="_blank"
           rel="noopener noreferrer"

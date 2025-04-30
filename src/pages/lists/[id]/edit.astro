@@ -5,128 +5,100 @@ import UrlItem from '../../../components/UrlItem.astro';
 import LoadingSpinner from '../../../components/LoadingSpinner.astro';
 import Toast from '../../../components/Toast.astro';
 import ErrorBoundary from '../../../components/ErrorBoundary.astro';
-import { getUrlList, updateUrlList, addUrlItem, deleteUrlItem } from '../../db/url-list-repository';
-import { fetchUrlMetadata } from '../../utils/url-metadata';
+import { getUrlList, updateUrlList, addUrlItem, deleteUrlItem, isSlugAvailable } from '../../../db/url-list-repository';
+import { fetchUrlMetadata } from '../../../utils/url-metadata';
+import { validateUrl, validateSlug, ValidationError } from '../../../utils/validation';
 
 const { id } = Astro.params;
-let list;
+let list = null;
 let error = '';
 let success = '';
+let loading = true;
 
 try {
+  if (!id || typeof id !== 'string') {
+    throw new Error('Invalid list ID');
+  }
+
   list = await getUrlList(id);
   
   if (!list) {
     return Astro.redirect('/404');
   }
 
-  // Handle form submissions
-  if (Astro.request.method === 'POST') {
-    const formData = await Astro.request.formData();
-    const action = formData.get('action') as string;
+  loading = false;
 
-    switch (action) {
-      case 'addUrl': {
-        const url = formData.get('url') as string;
-        validateUrl(url);
-        const metadata = await fetchUrlMetadata(url);
-        await addUrlItem(list.id, { url, ...metadata });
-        success = 'URL added successfully';
-        break;
-      }
-      case 'updateList': {
-        const title = formData.get('title') as string;
-        const customSlug = formData.get('customSlug') as string;
-        const isPublished = formData.get('isPublished') === 'true';
-        
-        if (customSlug) {
-          validateSlug(customSlug);
-          if (!await isSlugAvailable(customSlug) && customSlug !== list.customSlug) {
-            throw new ValidationError('This custom URL is already taken');
-          }
+  // Add proper form handling
+  if (Astro.request.method === 'POST') {
+    try {
+      const formData = await Astro.request.formData();
+      const action = formData.get('action') as string;
+
+      switch (action) {
+        case 'addUrl': {
+          const url = formData.get('url') as string;
+          validateUrl(url);
+          const metadata = await fetchUrlMetadata(url);
+          await addUrlItem(list.id, { 
+            url, 
+            title: metadata.title,
+            description: metadata.description
+          });
+          success = 'URL added successfully';
+          // Refresh list data after adding URL
+          list = await getUrlList(id);
+          break;
         }
-        
-        await updateUrlList(list.id, { title, customSlug, isPublished });
-        success = 'List updated successfully';
-        break;
+        case 'updateList': {
+          const title = formData.get('title') as string;
+          const customSlug = formData.get('customSlug') as string;
+          const isPublished = formData.get('isPublished') === 'true';
+          
+          if (customSlug) {
+            validateSlug(customSlug);
+            if (!await isSlugAvailable(customSlug) && customSlug !== list.customSlug) {
+              throw new ValidationError('This custom URL is already taken');
+            }
+          }
+          
+          await updateUrlList(list.id, { title, customSlug, isPublished });
+          success = 'List updated successfully';
+          break;
+        }
+        case 'deleteUrl': {
+          const urlId = formData.get('urlId') as string;
+          await deleteUrlItem(urlId);
+          success = 'URL deleted successfully';
+          break;
+        }
       }
-      case 'deleteUrl': {
-        const urlId = formData.get('urlId') as string;
-        await deleteUrlItem(urlId);
-        success = 'URL deleted successfully';
-        break;
-      }
+    } catch (e) {
+      error = e instanceof Error ? e.message : 'An unexpected error occurred';
+      console.error('Error:', e);
     }
-    
-    // Refresh list data after modifications
-    list = await getUrlList(id);
   }
 } catch (e) {
+  loading = false;
   error = e instanceof Error ? e.message : 'An unexpected error occurred';
+  console.error('Error loading list:', e);
 }
 
+const items = Array.isArray(list?.items) ? list.items : [];
 const shareUrl = list ? `${Astro.url.origin}/${list.customSlug || list.generatedSlug}` : '';
-
-// Import validation utilities
-import { validateUrl, validateSlug, ValidationError } from '../../../utils/validation';
-
-// State for error messages
-let errorMessage = '';
-let successMessage = '';
-
-// Handle form submissions
-if (Astro.request.method === 'POST') {
-  const formData = await Astro.request.formData();
-  const action = formData.get('action');
-
-  try {
-    switch (action) {
-      case 'addUrl':
-        const url = formData.get('url') as string;
-        validateUrl(url);
-        const metadata = await fetchUrlMetadata(url);
-        await addUrlItem(list.id, { url, ...metadata });
-        successMessage = 'URL added successfully';
-        break;
-
-      case 'updateList':
-        const title = formData.get('title') as string;
-        const customSlug = formData.get('customSlug') as string;
-        const isPublished = formData.get('isPublished') === 'true';
-        
-        if (customSlug) {
-          validateSlug(customSlug);
-          if (!await isSlugAvailable(customSlug) && customSlug !== list.customSlug) {
-            throw new ValidationError('This custom URL is already taken');
-          }
-        }
-        
-        await updateUrlList(list.id, { title, customSlug, isPublished });
-        successMessage = 'List updated successfully';
-        break;
-
-      case 'deleteUrl':
-        const urlId = formData.get('urlId') as string;
-        await deleteUrlItem(urlId);
-        break;
-    }
-
-    // Redirect to refresh the page
-    return Astro.redirect(`/lists/${id}/edit`);
-  } catch (error) {
-    console.error('Error updating list:', error);
-  }
-}
-
-const shareUrl = `${Astro.url.origin}/${list.customSlug || list.generatedSlug}`;
 ---
 
 <Layout title={list ? `Edit: ${list.title}` : 'Error'}>
   <div class="max-w-4xl mx-auto px-4 py-8">
+    {loading && (
+      <div class="flex justify-center py-12">
+        <LoadingSpinner size="lg" />
+      </div>
+    )}
+
     {error && <ErrorBoundary error={new Error(error)} />}
     {success && <Toast type="success" message={success} />}
     
-    {list && (
+    {list && !loading && (
       <form method="POST" class="space-y-8">
         <input type="hidden" name="action" value="updateList" />
       
@@ -188,12 +160,12 @@ const shareUrl = `${Astro.url.origin}/${list.customSlug || list.generatedSlug}`;
         <h2 class="text-xl font-semibold text-gray-900 mb-4">URLs in this list</h2>
         
         <div class="space-y-4 mb-8">
-          {list.items?.map((item) => (
+          {items.map((item) => (
             <UrlItem item={item} isEditing={true} />
           ))}
         </div>
 
-        <form method="POST" class="flex space-x-4" id="addUrlForm">
+        <form method="POST" class="flex space-x-4">
           <input type="hidden" name="action" value="addUrl" />
           <input
             type="url"
@@ -208,19 +180,28 @@ const shareUrl = `${Astro.url.origin}/${list.customSlug || list.generatedSlug}`;
         </form>
       </div>
     </form>
+    )}
   </div>
 </Layout>
 
 <script>
-  // Handle URL item deletion
-  document.addEventListener('deleteUrlItem', (e) => {
+  document.addEventListener('deleteUrlItem', (event: Event) => {
+    const e = event as CustomEvent;
     const form = document.createElement('form');
     form.method = 'POST';
     form.innerHTML = `
-      <input type="hidden" name="action" value="deleteUrl" />
-      <input type="hidden" name="urlId" value="${e.detail.id}" />
+      <input type="hidden" name="action" value="deleteUrl">
+      <input type="hidden" name="urlId" value="${e.detail.id}">
     `;
     document.body.appendChild(form);
     form.submit();
+  });
+
+  // Refresh page after successful form submission
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', async (e) => {
+      const submitButton = form.querySelector('button[type="submit"]');
+      if (submitButton) submitButton.disabled = true;
+    });
   });
 </script>

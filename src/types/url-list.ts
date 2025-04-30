@@ -5,7 +5,7 @@ export interface UrlList {
   customSlug?: string;
   generatedSlug: string;
   isPublished: boolean;
-  items?: UrlItem[];
+  items: UrlItem[];
   createdAt: Date;
   updatedAt: Date;
 }

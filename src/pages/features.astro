@@ -1,0 +1,111 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { APP_NAME, MAX_LIST_ITEMS } from '../utils/constants';
+
+const features = [
+  {
+    id: 'lists',
+    title: 'List Management',
+    description: 'Create and manage your URL collections efficiently',
+    items: [
+      'Create unlimited URL lists',
+      `Add up to ${MAX_LIST_ITEMS} URLs per list`,
+      'Edit list titles and descriptions',
+      'Delete lists when no longer needed',
+      'View all your lists in one dashboard'
+    ]
+  },
+  {
+    id: 'urls',
+    title: 'URL Management',
+    description: 'Advanced URL handling and organization',
+    items: [
+      'Add URLs with automatic metadata fetching',
+      'Edit URL titles and descriptions',
+      'Remove individual URLs from lists',
+      'Automatic URL validation',
+      'Preview URL metadata before adding'
+    ]
+  },
+  {
+    id: 'sharing',
+    title: 'List Sharing',
+    description: 'Multiple ways to share your collections',
+    items: [
+      'Generate shareable links',
+      'Customize list URLs for easy sharing',
+      'Publish/unpublish lists anytime',
+      'Share via social media or email',
+      'Copy links with one click'
+    ]
+  },
+  {
+    id: 'customization',
+    title: 'Customization',
+    description: 'Make your lists unique and organized',
+    items: [
+      'Choose custom URLs for lists',
+      'Add descriptive titles',
+      'Include detailed descriptions',
+      'Automatic or manual slug generation',
+      'Organize lists with custom metadata'
+    ]
+  }
+];
+---
+
+<Layout title={`Features - ${APP_NAME}`}>
+  <div class="bg-gradient-to-b from-blue-50 to-white">
+    <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl">
+          Powerful Features for URL Management
+        </h1>
+        <p class="mt-4 text-xl text-gray-600">
+          Everything you need to organize and share your URL collections
+        </p>
+      </div>
+
+      <div class="mt-16 space-y-16">
+        {features.map((feature, index) => (
+          <div class:list={[
+            'flex flex-col lg:flex-row items-center gap-8',
+            index % 2 && 'lg:flex-row-reverse'
+          ]}>
+            <div class="flex-1 space-y-4">
+              <h2 class="text-3xl font-bold text-gray-900">
+                {feature.title}
+              </h2>
+              <p class="text-lg text-gray-600">
+                {feature.description}
+              </p>
+              <ul class="space-y-3">
+                {feature.items.map(item => (
+                  <li class="flex items-start">
+                    <svg class="h-6 w-6 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class="ml-3 text-gray-600">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div class="flex-1 bg-gray-100 rounded-lg p-8">
+              <!-- Placeholder for feature illustration -->
+              <div class="aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-20 text-center">
+        <a
+          href="/get-started"
+          class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+        >
+          Get Started Now
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>

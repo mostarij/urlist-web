@@ -1,0 +1,102 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { APP_NAME, APP_DESCRIPTION, MAX_LIST_ITEMS } from '../utils/constants';
+---
+
+<Layout title={`About - ${APP_NAME}`}>
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">{APP_NAME}</h1>
+      <p class="text-xl text-gray-600">{APP_DESCRIPTION}</p>
+    </div>
+
+    <div class="prose prose-blue max-w-none">
+      <h2 class="text-2xl font-bold mb-6">Features & Functionality</h2>
+      
+      <div class="space-y-8">
+        <section>
+          <h3 class="text-xl font-semibold text-gray-800">📝 List Management</h3>
+          <ul class="mt-4 space-y-2">
+            <li>Create unlimited URL lists to organize your resources</li>
+            <li>Add up to {MAX_LIST_ITEMS} URLs per list</li>
+            <li>Automatic metadata fetching (titles and descriptions) from URLs</li>
+            <li>Edit and update URLs at any time</li>
+            <li>Delete individual URLs or entire lists</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3 class="text-xl font-semibold text-gray-800">🔗 Custom URLs</h3>
+          <ul class="mt-4 space-y-2">
+            <li>Choose custom URLs for your lists (e.g., urlist.com/my-awesome-list)</li>
+            <li>Automatic URL generation if you prefer not to create a custom one</li>
+            <li>Easy-to-share links that never expire</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3 class="text-xl font-semibold text-gray-800">🌐 Sharing & Privacy</h3>
+          <ul class="mt-4 space-y-2">
+            <li>Publish lists to make them publicly accessible</li>
+            <li>Keep lists private until you're ready to share</li>
+            <li>Share lists via direct links, social media, or email</li>
+            <li>Copy list URLs with a single click</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3 class="text-xl font-semibold text-gray-800">📱 How to Use</h3>
+          <ol class="mt-4 space-y-4">
+            <li>
+              <strong>Create a New List:</strong>
+              <p>Click the "New List" button in the navigation bar to start a fresh list.</p>
+            </li>
+            <li>
+              <strong>Add URLs:</strong>
+              <p>Paste URLs into the input field and we'll automatically fetch the website's title and description.</p>
+            </li>
+            <li>
+              <strong>Customize Your List:</strong>
+              <p>Add a title, choose a custom URL (optional), and organize your links.</p>
+            </li>
+            <li>
+              <strong>Share Your List:</strong>
+              <p>Click "Publish" to make your list public, then use the share options to distribute your list.</p>
+            </li>
+          </ol>
+        </section>
+
+        <section>
+          <h3 class="text-xl font-semibold text-gray-800">💡 Tips</h3>
+          <ul class="mt-4 space-y-2">
+            <li>Use descriptive titles for your lists to make them easy to find</li>
+            <li>Add descriptions to URLs to provide context for your viewers</li>
+            <li>Organize related links in separate lists for better management</li>
+            <li>Use custom URLs for professional or branded lists</li>
+          </ul>
+        </section>
+      </div>
+
+      <div class="mt-12 text-center">
+        <a
+          href="/get-started"
+          class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+        >
+          Get Started
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .prose ul {
+    @apply list-disc pl-6;
+  }
+  .prose ol {
+    @apply list-decimal pl-6;
+  }
+  .prose section {
+    @apply bg-gray-50 p-6 rounded-lg;
+  }
+</style>

@@ -1,44 +1,60 @@
 ---
 interface Props {
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   href?: string;
   type?: 'button' | 'submit';
   name?: string;
   value?: string;
   onclick?: string;
+  client?: 'load' | 'visible' | 'media' | 'idle';
   class?: string;
+  disabled?: boolean;
 }
 
-const props = Astro.props;
+const { 
+  variant = 'primary', 
+  size = 'md', 
+  href, 
+  type = 'button',
+  disabled = false,
+  client,
+  ...props 
+} = Astro.props;
 
-const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl';
+const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200';
 
 const variantStyles = {
-  primary: 'bg-blue-600 text-white hover:bg-blue-700',
-  secondary: 'bg-white text-blue-600 hover:bg-gray-50 border border-gray-200',
+  primary: 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-300',
+  secondary: 'bg-white text-blue-600 hover:bg-gray-50 border border-gray-200 disabled:bg-gray-100',
+  danger: 'bg-red-600 text-white hover:bg-red-700 disabled:bg-red-300'
 };
 
 const sizeStyles = {
-  sm: 'px-4 py-2 text-sm',
-  md: 'px-6 py-3 text-base',
-  lg: 'px-8 py-4 text-lg',
+  sm: 'px-3 py-1.5 text-sm',
+  md: 'px-4 py-2 text-base',
+  lg: 'px-6 py-3 text-lg'
 };
 
-const classes = `${baseStyles} ${variantStyles[props.variant || 'primary']} ${sizeStyles[props.size || 'md']} ${props.class || ''}`;
+const classes = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${props.class || ''}`;
 ---
 
-{props.href ? (
-  <a href={props.href} class={classes}>
+{href ? (
+  <a 
+    href={href} 
+    class={classes} 
+    {...props}
+    data-astro-reload={client ? undefined : true}
+  >
     <slot />
   </a>
 ) : (
-  <button
-    type={props.type || 'button'}
-    class={classes}
-    name={props.name}
-    value={props.value}
-    onclick={props.onclick}
+  <button 
+    type={type} 
+    class={classes} 
+    disabled={disabled}
+    data-astro-reload={client ? undefined : true}
+    {...props}
   >
     <slot />
   </button>

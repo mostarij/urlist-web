@@ -1,0 +1,68 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { 
+  APP_NAME, 
+  MAX_LIST_ITEMS, 
+  MAX_TITLE_LENGTH, 
+  MAX_DESCRIPTION_LENGTH 
+} from '../utils/constants';
+---
+
+<Layout title={`Terms of Service - ${APP_NAME}`}>
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <h1 class="text-3xl font-bold mb-8">Terms of Service</h1>
+    
+    <div class="prose prose-blue max-w-none">
+      <h2>1. Service Description</h2>
+      <p>{APP_NAME} is a URL list management service that allows users to create, manage, and share collections of URLs.</p>
+
+      <h2>2. User Responsibilities</h2>
+      <ul>
+        <li>Users are responsible for maintaining the security of their accounts</li>
+        <li>Users must not use the service to share malicious or harmful URLs</li>
+        <li>Users must respect the intellectual property rights of others</li>
+      </ul>
+
+      <h2>3. List Creation and Management</h2>
+      <ul>
+        <li>Users can create up to {MAX_LIST_ITEMS} URLs per list</li>
+        <li>List titles are limited to {MAX_TITLE_LENGTH} characters</li>
+        <li>Descriptions are limited to {MAX_DESCRIPTION_LENGTH} characters</li>
+        <li>Custom URLs must follow our slug guidelines</li>
+      </ul>
+
+      <h2>4. Data Storage and Privacy</h2>
+      <ul>
+        <li>We store the minimum necessary data to provide the service</li>
+        <li>Public lists are viewable by anyone with the link</li>
+        <li>Private lists are only accessible to their creators</li>
+      </ul>
+
+      <h2>5. Service Availability</h2>
+      <p>While we strive for high availability, we do not guarantee uninterrupted access to the service.</p>
+
+      <h2>6. Modifications to Service</h2>
+      <p>We reserve the right to modify or discontinue the service at any time.</p>
+
+      <h2>7. Termination</h2>
+      <p>We reserve the right to terminate accounts that violate these terms.</p>
+
+      <h2>8. Disclaimer of Warranty</h2>
+      <p>The service is provided "as is" without warranties of any kind.</p>
+
+      <p class="text-sm text-gray-600 mt-8">Last updated: {new Date().toISOString().split('T')[0]}</p>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .prose h2 {
+    @apply text-xl font-semibold mt-8 mb-4;
+  }
+  .prose ul {
+    @apply list-disc pl-6 my-4;
+  }
+  .prose p {
+    @apply my-4;
+  }
+</style>

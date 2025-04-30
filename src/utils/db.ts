@@ -1,18 +1,40 @@
 import { Pool } from 'pg';
 import { ENV } from './constants';
+import fs from 'fs/promises';
+import path from 'path';
 
 // Create a new Pool instance with validated connection string
 const pool = new Pool({
   connectionString: ENV.DATABASE_URL,
+  ssl: ENV.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
-// Test the connection
-pool.query('SELECT NOW()', (err) => {
-  if (err) {
-    console.error('Error connecting to the database:', err);
-  } else {
-    console.log('Successfully connected to the database');
+// Test the connection immediately
+pool
+  .connect()
+  .then(() => console.log('Successfully connected to database'))
+  .catch((err) => {
+    console.error('Failed to connect to database:', err.message);
+    process.exit(1);
+  });
+
+// Initialize database with schema
+async function initializeDatabase() {
+  try {
+    const schemaPath = path.join(process.cwd(), 'src', 'db', 'schema.sql');
+    const schema = await fs.readFile(schemaPath, 'utf-8');
+    await pool.query(schema);
+    console.log('Database schema initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize database schema:', error);
+    throw error;
   }
+}
+
+// Initialize schema on startup
+initializeDatabase().catch((err) => {
+  console.error('Database initialization failed:', err);
+  process.exit(1);
 });
 
 export type QueryResult<T> = {

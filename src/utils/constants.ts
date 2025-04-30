@@ -1,25 +1,33 @@
-import { z } from 'zod';
+import 'dotenv/config';
 
-// Environment variable validation schema
-const envSchema = z.object({
-  DATABASE_URL: z.string().url(),
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  APP_URL: z.string().url(),
-  SESSION_SECRET: z.string().min(32),
-});
+function validateEnv() {
+  // Add defaults for development
+  if (process.env.NODE_ENV !== 'production') {
+    process.env.DATABASE_URL ||= 'postgresql://user:password@localhost:5432/urlist';
+    process.env.APP_URL ||= 'http://localhost:3000';
+    process.env.SESSION_SECRET ||= 'dev-secret-at-least-32-chars-long-here';
+  }
 
-// Validate environment variables
-const env = envSchema.parse({
-  DATABASE_URL: process.env.DATABASE_URL,
-  NODE_ENV: process.env.NODE_ENV,
-  APP_URL: process.env.APP_URL,
-  SESSION_SECRET: process.env.SESSION_SECRET,
-});
+  const required = ['DATABASE_URL', 'APP_URL', 'SESSION_SECRET'];
+  const missing = required.filter(key => !process.env[key]);
+  
+  if (missing.length > 0) {
+    console.error('Environment variables missing:', missing);
+    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+  }
 
-export const ENV = env;
+  return {
+    DATABASE_URL: process.env.DATABASE_URL!,
+    NODE_ENV: process.env.NODE_ENV || 'development',
+    APP_URL: process.env.APP_URL!,
+    SESSION_SECRET: process.env.SESSION_SECRET!,
+  };
+}
+
+export const ENV = validateEnv();
 export const APP_NAME = 'UrList';
 export const APP_DESCRIPTION = 'Your universal list manager for organizing everything in one place';
-export const IS_PROD = env.NODE_ENV === 'production';
+export const IS_PROD = ENV.NODE_ENV === 'production';
 
 export const ROUTES = {
   HOME: '/',
@@ -27,6 +35,9 @@ export const ROUTES = {
   ABOUT: '/about',
   LISTS: '/lists',
   NEW_LIST: '/lists/new',
+  TERMS: '/terms',
+  FEATURES: '/features',
+  PRIVACY: '/privacy',
 } as const;
 
 export const MAX_TITLE_LENGTH = 100;

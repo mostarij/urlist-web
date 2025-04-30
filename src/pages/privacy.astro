@@ -1,0 +1,94 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { APP_NAME } from '../utils/constants';
+
+const lastUpdated = new Date().toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+---
+
+<Layout title={`Privacy Policy - ${APP_NAME}`}>
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <h1 class="text-3xl font-bold mb-8">Privacy Policy</h1>
+    
+    <div class="prose prose-blue max-w-none space-y-8">
+      <section>
+        <h2 class="text-xl font-semibold mb-4">1. Information We Collect</h2>
+        <h3 class="text-lg font-medium mb-2">1.1 List Information</h3>
+        <p>When you create lists, we collect:</p>
+        <ul>
+          <li>List titles and descriptions</li>
+          <li>URLs you add to your lists</li>
+          <li>Custom slugs/URLs you create</li>
+          <li>Metadata from URLs (titles and descriptions)</li>
+        </ul>
+
+        <h3 class="text-lg font-medium mb-2 mt-4">1.2 Usage Information</h3>
+        <p>We automatically collect:</p>
+        <ul>
+          <li>Access times and dates</li>
+          <li>Pages viewed</li>
+          <li>List creation and modification timestamps</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold mb-4">2. How We Use Information</h2>
+        <p>We use collected information to:</p>
+        <ul>
+          <li>Create and manage your URL lists</li>
+          <li>Generate shareable links</li>
+          <li>Improve our services</li>
+          <li>Ensure platform security</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold mb-4">3. Information Sharing</h2>
+        <p>We share information in the following ways:</p>
+        <ul>
+          <li>Public lists are viewable by anyone with the link</li>
+          <li>Private lists are only accessible to their creators</li>
+          <li>We do not sell your personal information</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold mb-4">4. Data Security</h2>
+        <p>We protect your data through:</p>
+        <ul>
+          <li>Secure database storage</li>
+          <li>Encrypted data transmission</li>
+          <li>Regular security updates</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-semibold mb-4">5. Your Rights</h2>
+        <p>You have the right to:</p>
+        <ul>
+          <li>Access your lists and data</li>
+          <li>Delete your lists</li>
+          <li>Modify list privacy settings</li>
+          <li>Request data export</li>
+        </ul>
+      </section>
+
+      <p class="text-sm text-gray-600 mt-8">Last updated: {lastUpdated}</p>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .prose h2 {
+    @apply text-xl font-semibold mt-8 mb-4;
+  }
+  .prose ul {
+    @apply list-disc pl-6 my-4;
+  }
+  .prose p {
+    @apply my-4;
+  }
+</style>

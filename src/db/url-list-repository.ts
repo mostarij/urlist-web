@@ -1,18 +1,37 @@
-import { query, transaction } from '../utils/db';
+import { query } from '../utils/db';
 import type { UrlList, UrlItem, CreateUrlListInput, CreateUrlItemInput, UpdateUrlListInput, UpdateUrlItemInput } from '../types/url-list';
 import { generateSlug } from '../utils/slug';
+import { randomUUID } from 'crypto';
 
 export async function createUrlList(userId: string, input: CreateUrlListInput): Promise<UrlList> {
-  const generatedSlug = input.customSlug || await generateSlug(input.title);
+  let customSlug = input.customSlug;
+  let generatedSlug = await generateSlug(input.title);
+  
+  // If custom slug is provided, validate its uniqueness
+  if (customSlug) {
+    const exists = await isSlugTaken(customSlug);
+    if (exists) {
+      // Append random suffix if slug is taken
+      customSlug = `${customSlug}-${Math.random().toString(36).substring(2, 7)}`;
+    }
+  }
   
   const result = await query<UrlList>(
     `INSERT INTO url_lists (user_id, title, custom_slug, generated_slug)
      VALUES ($1, $2, $3, $4)
      RETURNING *`,
-    [userId, input.title, input.customSlug, generatedSlug]
+    [userId, input.title, customSlug, generatedSlug]
   );
   
   return result.rows[0];
+}
+
+async function isSlugTaken(slug: string): Promise<boolean> {
+  const result = await query(
+    'SELECT EXISTS(SELECT 1 FROM url_lists WHERE custom_slug = $1)',
+    [slug]
+  );
+  return result.rows[0].exists;
 }
 
 export async function getUrlList(slugOrId: string): Promise<UrlList | null> {
@@ -20,7 +39,7 @@ export async function getUrlList(slugOrId: string): Promise<UrlList | null> {
     `SELECT l.*, array_agg(i.*) as items
      FROM url_lists l
      LEFT JOIN url_items i ON i.list_id = l.id
-     WHERE l.id = $1 OR l.custom_slug = $1 OR l.generated_slug = $1
+     WHERE l.id::text = $1 OR l.custom_slug = $1 OR l.generated_slug = $1
      GROUP BY l.id`,
     [slugOrId]
   );
@@ -61,7 +80,6 @@ export async function deleteUrlList(id: string): Promise<boolean> {
     'DELETE FROM url_lists WHERE id = $1 RETURNING id',
     [id]
   );
-  
   return result.rowCount > 0;
 }
 
@@ -70,7 +88,7 @@ export async function addUrlItem(listId: string, input: CreateUrlItemInput): Pro
     `INSERT INTO url_items (list_id, url, title, description)
      VALUES ($1, $2, $3, $4)
      RETURNING *`,
-    [listId, input.url, input.title, input.description]
+    [listId, input.url, input.title || null, input.description || null]
   );
   
   return result.rows[0];
@@ -104,6 +122,5 @@ export async function isSlugAvailable(slug: string): Promise<boolean> {
     'SELECT EXISTS(SELECT 1 FROM url_lists WHERE custom_slug = $1 OR generated_slug = $1)',
     [slug]
   );
-  
   return !result.rows[0].exists;
 }

@@ -1,0 +1,80 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/Button.astro';
+import { APP_NAME, APP_DESCRIPTION, MAX_LIST_ITEMS } from '../utils/constants';
+
+const features = [
+  {
+    title: 'Create Lists',
+    description: `Organize up to ${MAX_LIST_ITEMS} URLs in a single list`,
+    icon: '📝',
+    details: [
+      'Start with a descriptive title',
+      'Add custom URLs for easy sharing',
+      'Auto-generated URLs available'
+    ]
+  },
+  {
+    title: 'Manage URLs',
+    description: 'Add, edit, and organize your links',
+    icon: '🔗',
+    details: [
+      'Automatic title and description fetching',
+      'Edit URL metadata anytime',
+      'Delete URLs when no longer needed'
+    ]
+  },
+  {
+    title: 'Share Collections',
+    description: 'Multiple ways to share your lists',
+    icon: '🌐',
+    details: [
+      'Public and private list options',
+      'Share via direct links',
+      'Social media integration'
+    ]
+  }
+];
+---
+
+<Layout title={`Get Started - ${APP_NAME}`}>
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        Get Started with {APP_NAME}
+      </h1>
+      <p class="text-xl text-gray-600">
+        {APP_DESCRIPTION}
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8 mb-16">
+      {features.map(feature => (
+        <div class="bg-white p-6 rounded-lg shadow-sm">
+          <div class="text-3xl mb-4">{feature.icon}</div>
+          <h3 class="text-xl font-semibold mb-2">{feature.title}</h3>
+          <p class="text-gray-600 mb-4">{feature.description}</p>
+          <ul class="space-y-2">
+            {feature.details.map(detail => (
+              <li class="flex items-center text-sm text-gray-500">
+                <svg class="w-4 h-4 mr-2 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                {detail}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="text-center">
+      <Button href="/lists/new" size="lg">
+        Create Your First List
+      </Button>
+      <p class="mt-4 text-sm text-gray-500">
+        No account required to get started
+      </p>
+    </div>
+  </div>
+</Layout>

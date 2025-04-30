@@ -1,14 +1,36 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Welcome from '../components/Welcome.astro';
+import { ENV } from '../utils/constants';
 import '../styles/global.css';
+
+let error: string | null = null;
+
+try {
+  // Simple validation
+  if (!ENV.DATABASE_URL || !ENV.APP_URL || !ENV.SESSION_SECRET) {
+    error = 'Missing required environment variables';
+  }
+} catch (e) {
+  error = e instanceof Error ? e.message : 'An unexpected error occurred';
+}
 ---
 
 <Layout title="UrList - Your Universal List Manager">
-  <main class="container mx-auto px-4 py-16">
-    <Welcome 
-      title="Welcome to UrList"
-      subtitle="Your universal list manager for organizing everything in one place"
-    />
-  </main>
+  {error ? (
+    <div class="max-w-2xl mx-auto mt-8 p-4 bg-red-50 border border-red-200 rounded-lg">
+      <h2 class="text-red-700 font-semibold">Configuration Error</h2>
+      <p class="text-red-600 mt-1">{error}</p>
+      <p class="mt-4 text-sm text-gray-600">
+        Please check your environment configuration and try again.
+      </p>
+    </div>
+  ) : (
+    <main class="container mx-auto px-4 py-16">
+      <Welcome 
+        title="Welcome to UrList"
+        subtitle="Your universal list manager for organizing everything in one place"
+      />
+    </main>
+  )}
 </Layout>
